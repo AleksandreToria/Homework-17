@@ -7,8 +7,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.example.homework17.BaseFragment
 import com.example.homework17.databinding.FragmentMainBinding
-import com.example.homework17.sharedPreferance.SharedPreferencesHelper
+import com.example.homework17.datastorepreferance.DataStoreHelper
 import com.example.homework17.viewmodel.MainViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
@@ -39,9 +40,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
 
     private fun sessionCheck() {
-        val authToken = SharedPreferencesHelper.getAuthToken(requireContext())
-        if (!authToken.isNullOrBlank()) {
-            checkTokenValidityAndNavigate(authToken)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val authToken = DataStoreHelper.getAuthToken(requireContext()).first()
+            if (!authToken.isNullOrBlank()) {
+                checkTokenValidityAndNavigate(authToken)
+            }
         }
     }
 

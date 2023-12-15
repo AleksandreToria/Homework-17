@@ -13,7 +13,7 @@ import com.example.homework17.BaseFragment
 import com.example.homework17.common.Resource
 import com.example.homework17.databinding.FragmentLoginBinding
 import com.example.homework17.dataclass.Token
-import com.example.homework17.sharedPreferance.SharedPreferencesHelper
+import com.example.homework17.datastorepreferance.DataStoreHelper
 import com.example.homework17.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -73,7 +73,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         setFragmentResult("LOGIN_RESULT", result)
 
         if (rememberMe) {
-            SharedPreferencesHelper.saveUserEmail(requireContext(), email)
+            viewLifecycleOwner.lifecycleScope.launch {
+                DataStoreHelper.saveUserEmail(requireContext(), email)
+            }
         }
 
         viewModel.loginUser(email, password, requireContext(), rememberMe)

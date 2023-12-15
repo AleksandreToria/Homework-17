@@ -1,12 +1,18 @@
 package com.example.homework17.fragment
 
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.example.homework17.BaseFragment
 import com.example.homework17.databinding.FragmentHomeBinding
-import com.example.homework17.sharedPreferance.SharedPreferencesHelper
+import com.example.homework17.datastorepreferance.DataStoreHelper
+import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
+
+    private lateinit var navController: NavController
+
     override fun bindViewActionListener() {
         binding.logoutBtn.setOnClickListener {
             handleLogoutButtonClick()
@@ -14,32 +20,38 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     override fun setUp() {
+        navController = findNavController()
         observeFragmentResult()
         getEmail()
     }
 
     private fun handleLogoutButtonClick() {
         logout()
-        val action = HomeFragmentDirections.actionHomeFragmentToMainFragment()
-        binding.root.findNavController().navigate(action)
     }
 
     private fun getEmail() {
-        val email = SharedPreferencesHelper.getUserEmail(requireContext())
-        binding.textview.text = email
+        viewLifecycleOwner.lifecycleScope.launch {
+            DataStoreHelper.getUserEmail(requireContext()).collect { email ->
+                binding.textview.text = email
+            }
+        }
     }
 
     private fun observeFragmentResult() {
         setFragmentResultListener("LOGIN_RESULT") { _, result ->
             val email = result.getString("email", "")
-
             binding.textview.text = email
         }
     }
 
     private fun logout() {
-        SharedPreferencesHelper.clearAuthToken(requireContext())
-        SharedPreferencesHelper.clearUserEmail(requireContext())
-    }
+        viewLifecycleOwner.lifecycleScope.launch {
+            DataStoreHelper.clearAuthToken(requireContext())
+            DataStoreHelper.clearUserEmail(requireContext())
 
+            navController.navigate(HomeFragmentDirections.actionHomeFragmentToMainFragment())
+        }
+    }
 }
+
+
