@@ -1,4 +1,4 @@
-package com.example.homework17.dataclass
+package com.example.homework17.data.dataclass
 
 data class Data(
     val email: String,

@@ -1,8 +1,8 @@
 package com.example.homework17.data.log_in
 
 import com.example.homework17.data.common.Resource
-import com.example.homework17.dataclass.Data
-import com.example.homework17.dataclass.ErrorResponse
+import com.example.homework17.data.dataclass.Data
+import com.example.homework17.data.dataclass.ErrorResponse
 import com.example.homework17.domain.log_in.LogInRepository
 import com.example.homework17.domain.log_in.LogInResponse
 import com.squareup.moshi.JsonAdapter

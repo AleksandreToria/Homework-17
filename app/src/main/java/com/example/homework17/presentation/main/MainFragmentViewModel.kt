@@ -2,7 +2,7 @@ package com.example.homework17.presentation.main
 
 import androidx.lifecycle.ViewModel
 import com.example.homework17.data.log_in.LoginApiService
-import com.example.homework17.dataclass.Token
+import com.example.homework17.data.dataclass.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.HttpException
 import java.io.IOException
