@@ -1,4 +1,4 @@
-package com.example.homework17.fragment
+package com.example.homework17.presentation.login
 
 import android.os.Bundle
 import android.widget.Toast
@@ -9,17 +9,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import com.example.homework17.BaseFragment
-import com.example.homework17.common.Resource
+import com.example.homework17.App
+import com.example.homework17.data.common.Resource
+import com.example.homework17.data.datastorepreferance.DataStoreHelper
 import com.example.homework17.databinding.FragmentLoginBinding
-import com.example.homework17.dataclass.Token
-import com.example.homework17.datastorepreferance.DataStoreHelper
-import com.example.homework17.viewmodel.LoginViewModel
+import com.example.homework17.domain.log_in.LogInResponse
+import com.example.homework17.presentation.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
     private val viewModel by viewModels<LoginViewModel>()
+    private val context = App.application.applicationContext
 
     override fun setUp() {
         observeFragmentResult()
@@ -74,11 +77,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
 
         if (rememberMe) {
             viewLifecycleOwner.lifecycleScope.launch {
-                DataStoreHelper.saveUserEmail(requireContext(), email)
+                DataStoreHelper.saveUserEmail(context, email)
             }
         }
 
-        viewModel.loginUser(email, password, requireContext(), rememberMe)
+        viewModel.loginUser(email, password, rememberMe)
     }
 
 
@@ -99,7 +102,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         }
     }
 
-    private fun handleLoginResponse(resource: Resource<Token>) {
+    private fun handleLoginResponse(resource: Resource<LogInResponse>) {
         when (resource) {
             is Resource.Success -> showMessage("Successful").also {
                 val action = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
@@ -107,7 +110,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
                 binding.root.findNavController().navigate(action)
             }
 
-            is Resource.Error -> showMessage("${resource.errorMessage}")
+            is Resource.Error -> showMessage(resource.errorMessage)
+            else -> {}
         }
     }
 

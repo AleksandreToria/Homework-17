@@ -1,14 +1,16 @@
-package com.example.homework17.fragment
+package com.example.homework17.presentation.home
 
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.example.homework17.BaseFragment
+import com.example.homework17.data.datastorepreferance.DataStoreHelper
 import com.example.homework17.databinding.FragmentHomeBinding
-import com.example.homework17.datastorepreferance.DataStoreHelper
+import com.example.homework17.presentation.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
 
     private lateinit var navController: NavController

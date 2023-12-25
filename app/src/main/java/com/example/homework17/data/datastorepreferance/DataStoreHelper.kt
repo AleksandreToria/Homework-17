@@ -1,4 +1,4 @@
-package com.example.homework17.datastorepreferance
+package com.example.homework17.data.datastorepreferance
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit

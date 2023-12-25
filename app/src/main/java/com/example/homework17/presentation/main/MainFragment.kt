@@ -1,20 +1,21 @@
-package com.example.homework17.fragment
+package com.example.homework17.presentation.main
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import com.example.homework17.BaseFragment
+import com.example.homework17.data.datastorepreferance.DataStoreHelper
 import com.example.homework17.databinding.FragmentMainBinding
-import com.example.homework17.datastorepreferance.DataStoreHelper
-import com.example.homework17.viewmodel.MainViewModel
+import com.example.homework17.presentation.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<MainFragmentViewModel>()
 
     override fun bindViewActionListener() {
         listeners()
@@ -41,9 +42,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
     private fun sessionCheck() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val authToken = DataStoreHelper.getAuthToken(requireContext()).first()
-            if (!authToken.isNullOrBlank()) {
-                checkTokenValidityAndNavigate(authToken)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val authToken = context?.let { DataStoreHelper.getAuthToken(it).first() }
+                if (!authToken.isNullOrBlank()) {
+                    checkTokenValidityAndNavigate(authToken)
+                }
             }
         }
     }
