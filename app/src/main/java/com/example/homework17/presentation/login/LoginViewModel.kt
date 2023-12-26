@@ -2,9 +2,8 @@ package com.example.homework17.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.homework17.App
 import com.example.homework17.data.common.Resource
-import com.example.homework17.data.datastorepreferance.DataStoreHelper
+import com.example.homework17.domain.datastore.DataStoreRepository
 import com.example.homework17.domain.log_in.LogInRepository
 import com.example.homework17.domain.log_in.LogInResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val logInRepository: LogInRepository) :
+class LoginViewModel @Inject constructor(
+    private val logInRepository: LogInRepository,
+    private val dataStoreRepository: DataStoreRepository
+) :
     ViewModel() {
     private val _dataFlow: MutableStateFlow<Resource<LogInResponse>?> = MutableStateFlow(null)
     val dataFlow = _dataFlow.asStateFlow()
@@ -38,11 +40,17 @@ class LoginViewModel @Inject constructor(private val logInRepository: LogInRepos
         }
     }
 
+    fun saveUserEmail(email: String) {
+        viewModelScope.launch {
+            dataStoreRepository.saveUserEmail(email)
+        }
+    }
+
     private fun saveCredentials() {
         val authToken = logInRepository.getAuthToken()
         if (!authToken.isNullOrBlank()) {
             viewModelScope.launch {
-                DataStoreHelper.saveAuthToken(App.application.applicationContext, authToken)
+                dataStoreRepository.saveAuthToken(authToken)
             }
         }
     }

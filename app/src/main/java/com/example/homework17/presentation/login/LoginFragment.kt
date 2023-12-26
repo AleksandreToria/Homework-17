@@ -9,9 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import com.example.homework17.App
 import com.example.homework17.data.common.Resource
-import com.example.homework17.data.datastorepreferance.DataStoreHelper
 import com.example.homework17.databinding.FragmentLoginBinding
 import com.example.homework17.domain.log_in.LogInResponse
 import com.example.homework17.presentation.BaseFragment
@@ -19,10 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
+class LoginFragment :
+    BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
     private val viewModel by viewModels<LoginViewModel>()
-    private val context = App.application.applicationContext
 
     override fun setUp() {
         observeFragmentResult()
@@ -77,7 +75,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
 
         if (rememberMe) {
             viewLifecycleOwner.lifecycleScope.launch {
-                DataStoreHelper.saveUserEmail(context, email)
+                viewModel.saveUserEmail(email)
             }
         }
 
@@ -125,6 +123,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

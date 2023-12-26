@@ -5,11 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import com.example.homework17.data.datastorepreferance.DataStoreHelper
 import com.example.homework17.databinding.FragmentMainBinding
 import com.example.homework17.presentation.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,9 +41,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun sessionCheck() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val authToken = context?.let { DataStoreHelper.getAuthToken(it).first() }
-                if (!authToken.isNullOrBlank()) {
-                    checkTokenValidityAndNavigate(authToken)
+                viewModel.dataFlow.collect { authToken ->
+                    if (!authToken.isNullOrBlank()) {
+                        checkTokenValidityAndNavigate(authToken)
+                    }
                 }
             }
         }
@@ -54,9 +53,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun checkTokenValidityAndNavigate(token: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val isValidToken = viewModel.checkTokenValidity(token)
-                if (isValidToken) {
-                    navigateToHomeFragment()
+                viewModel.dataFlow.collect {
+                    if (it.isNullOrBlank()) {
+                        val isValidToken = viewModel.checkTokenValidity(token)
+                        if (isValidToken) {
+                            navigateToHomeFragment()
+                        }
+                    }
                 }
             }
         }
