@@ -11,7 +11,10 @@ import androidx.navigation.fragment.findNavController
 import com.example.homework17.databinding.FragmentHomeBinding
 import com.example.homework17.presentation.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
@@ -55,6 +58,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.clearUserEmail()
                 viewModel.clearAuthToken()
+
+//                Could not find a better solution, token was not being deleted in time
+//                And the app was returning back to home fragment
+                withContext(Dispatchers.Default) {
+                    delay(500)
+                }
 
                 binding.root.findNavController()
                     .navigate(HomeFragmentDirections.actionHomeFragmentToMainFragment())
